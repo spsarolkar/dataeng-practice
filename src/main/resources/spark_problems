@@ -1,0 +1,316 @@
+🔹 1. Streaming Query: High-Value Transaction Alerts
+Scenario: You're ingesting real-time banking transactions via Kafka.
+
+Task:
+
+Read the stream from Kafka
+
+Parse each message into a structured format (accountId, amount, txnTime)
+
+Apply a watermark of 5 minutes
+
+Trigger alerts if a user makes more than 3 transactions above ₹50,000 within a 10-minute sliding window
+
+Involves: Spark Streaming, Watermarking, Windowing, Structured Streaming joins/aggregations
+
+🔹 2. DataFrame Query: Employee-Project Mapping
+Scenario: You have two static CSV files:
+
+employees.csv(accountId, name, dept)
+
+projects.csv(accountId, projectName)
+
+Task:
+
+Load both into DataFrames
+
+Perform a left join to get employees along with their project names
+
+Show count of employees per department working on each project
+
+Write the output as partitioned Parquet files by dept
+
+Involves: DataFrames, Joins, GroupBy, Write with Partitioning
+
+🔹 3. Dataset Query: Product Purchase Analysis
+Scenario: You have a Dataset of Order(productId, userId, amount, orderTime)
+
+Task:
+
+Use Java Beans + Encoders to create a Dataset<Order>
+
+Group by productId and find average amount spent per product
+
+Filter products with average spend > ₹2000
+
+Convert final result to DataFrame and show top 10 products by spend
+
+Involves: Dataset API, Encoders, Typed aggregations, Dataset ↔ DataFrame conversion
+
+🔹 4. RDD Query: Access Log Analysis
+Scenario: Analyze Apache access logs (each line = log entry).
+
+Task:
+
+Read logs using sc.textFile(...)
+
+Parse to extract IP, URL, and timestamp
+
+Count how many requests were made per IP
+
+Identify top 5 IPs by request volume
+
+Involves: RDD, map/filter, reduceByKey, custom parsing, sorting
+
+🔹 5. Mixed Scenario: Streaming + Static Enrichment
+Scenario: Ingest transactions in real-time, and enrich them using a static customer master list.
+
+transactions: from Kafka — txnId, userId, amount, txnTime
+
+customers.csv: static — userId, name, city
+
+Task:
+
+Read streaming data from Kafka and static data from CSV
+
+Parse Kafka stream to structured format
+
+Enrich transactions with customer info using a broadcast join
+
+Group by city and count high-value transactions (amount > ₹10,000)
+
+Output result to console
+
+Involves: Spark Structured Streaming, DataFrame, Broadcast Join, Aggregations, Streaming joins
+
+🔹 6. Stateful Streaming: Detecting Suspicious Login Behavior
+Scenario: Detect if a user logs in from two different IPs within 1 minute.
+
+Task:
+
+Stream login events: userId, ipAddress, loginTime
+
+Use mapGroupsWithState or flatMapGroupsWithState to track IPs per user
+
+Raise an alert if two different IPs are used within 60 seconds
+
+Involves: Structured Streaming, Stateful operations, Datasets or custom logic
+--------------------------------------------------------------------------------------------------------------
+🔹 7. Streaming Query: Login Spike Detection
+Scenario: Detect user login spikes in a short period.
+
+Task:
+
+Ingest login events from Kafka: userId, loginTime
+
+Apply a 5-minute watermark
+
+Raise an alert if a user logs in more than 5 times in 2 minutes
+
+🧩 Involves: withWatermark, sliding window, groupBy, threshold filtering
+
+🔹 8. Dataset Query: Monthly Sales Summary
+Scenario: You have a CSV of product sales across time.
+
+Schema: productId, category, quantity, price, saleDate
+
+Task:
+
+Use Java Bean + Dataset<Sale>
+
+Calculate total revenue per product per month
+
+Show top 3 best-selling products per category
+
+🧩 Involves: Encoders, groupByKey, Typed aggregations, month() function
+
+🔹 9. Streaming + Window Join: Late-Order Tracking
+Scenario: Match late product deliveries with order time.
+
+Data:
+
+Kafka Topic A: orders — orderId, userId, orderTime
+
+Kafka Topic B: deliveries — orderId, deliveryTime
+
+Task:
+
+Join orders and deliveries streams with watermark
+
+Find orders delivered more than 3 days late
+
+Output to console or file
+
+🧩 Involves: joinWith, event-time joins, datediff(), watermark on both sides
+
+🔹 10. RDD Query: Top Referrers in Access Logs
+Scenario: Analyze website referrer traffic.
+
+Input: Web access logs (ip, referrer, timestamp, url)
+
+Task:
+
+Extract referrer field
+
+Count total visits per referrer
+
+Identify top 10 referrers sorted by traffic
+
+🧩 Involves: textFile(), map, reduceByKey, sortByKey
+
+🔹 11. Mixed: IoT Sensor Spike Detector
+Scenario: Ingest sensor data and detect anomalies.
+
+Streaming from Kafka:
+
+sensorId, temperature, humidity, timestamp
+
+Task:
+
+Apply watermark + sliding window
+
+Calculate average temperature per sensor
+
+Flag sensors where temperature increased by >10°C within 5 minutes
+
+🧩 Involves: window joins, stateful stream, historical comparison via GroupState
+
+🔹 12. DataFrame + Dataset: Employee Salary Bucketing
+Scenario: HR wants to bucket employees by salary range.
+
+Data: employeeId, name, dept, salary
+
+Task:
+
+Load as DataFrame
+
+Create buckets: <50k, 50k–100k, 100k+
+
+Count employees per dept per bucket
+
+🧩 Involves: withColumn, when, groupBy, pivot-style output
+--------------------------------------------------------------------------------------------------------
+🔹 13. Complex Join Optimization: Sales + Product Hierarchy
+Scenario: You have a large sales dataset (sales.csv) and a hierarchical product category table (products.csv).
+
+Task:
+
+🔧 Scenario
+You have two datasets:
+
+sales.csv: contains saleId, productId, quantity, amount, timestamp
+
+products.csv: contains productId, subcategory, category
+
+Join sales with products to get category, subcategory
+
+Aggregate total sales per category
+
+Optimize the join using broadcast hint, partitioning, or bucketing
+
+Save result as partitioned Parquet
+
+Involves: Join optimization, broadcast(), .repartition(), .coalesce(), .write().partitionBy(...)
+
+🔹 14. Streaming + Slowly Changing Dimensions (SCD Type 2)
+Scenario: Customer attributes change over time (address, tier), and you receive real-time transactions.
+
+Task:
+
+Ingest real-time transactions from Kafka
+
+Join with SCD Type 2 dimension table to enrich with current customer info
+
+Use last_update_time to filter latest record per customer
+
+Apply watermarking and save enriched events
+
+Involves: Window functions, streaming join, deduplication, watermark, state management
+
+🔹 15. Out-of-Order Event Handling in Structured Streaming
+Scenario: Events are arriving late and out-of-order from IoT sensors.
+
+Task:
+
+Apply watermarking on timestamp
+
+Use 10-minute sliding window
+
+Detect and separate late events into a separate Kafka topic
+
+Maintain proper state expiration
+
+Involves: withWatermark, window(), outputMode("append"), side-output handling
+
+🔹 16. Skewed Join Handling
+Scenario: You're joining two tables on countryId, but one country (e.g., "IN") dominates 80% of the data.
+
+Task:
+
+Detect join skew
+
+Apply salting technique or repartitioning to handle it
+
+Measure performance with and without salting
+
+Involves: Skew analysis, rand(), custom join keys, partition strategy
+
+🔹 17. Memory Tuning Simulation
+Scenario: You're processing 500M records of logs in batches and Spark is OOMing.
+
+Task:
+
+Optimize job using:
+
+persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+.repartition(n)
+
+spark.sql.shuffle.partitions
+
+Measure memory usage using Spark UI
+
+Convert wide transformations to narrow ones (e.g., avoid groupByKey)
+
+Involves: Spark UI, persistence tuning, avoiding wide transformations
+
+🔹 18. Windowed Aggregation + Stateful Counter
+Scenario: Detect user activity spikes within rolling 15-minute windows (sliding every 5 minutes).
+
+Task:
+
+Count events per userId
+
+Maintain a rolling state to detect if activity increased by 200% in the current window vs last
+
+Emit alerts
+
+Involves: flatMapGroupsWithState, rolling aggregation, watermark, trend detection
+
+🔹 19. Pivot + Unpivot Transformation
+Scenario: Flatten an events table with multiple event types into one table with event names as columns.
+
+Task:
+
+Load event logs with eventType column
+
+Pivot to convert event types to individual columns
+
+Then unpivot back using stack() for downstream use
+
+Involves: pivot, stack, schema restructuring
+
+🔹 20. ETL Pipeline Simulation with UDFs and Validation
+Scenario: Build a mini-ETL pipeline that:
+
+Loads customer records
+
+Applies validations using UDFs (e.g., email, phone)
+
+Enriches data from dimension tables
+
+Flags invalid records and routes them separately
+
+Writes clean data to Iceberg/Parquet
+
+Involves: UDF, data quality framework, structured logging, dynamic routing

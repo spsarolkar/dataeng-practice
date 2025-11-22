@@ -1,0 +1,74 @@
+🧪 Core Java / Collections
+1. 🔁 LRU Cache (Least Recently Used)
+Design a cache using LinkedHashMap or Deque + HashMap.
+
+✅ Practice: Map, Queue, Eviction policy, Concurrency control (optional)
+
+2. 🔢 Custom Comparator Sort
+Sort a list of Employee objects by age, and then by name.
+
+java
+Copy
+Edit
+List<Employee> list = ...
+list.sort(Comparator.comparing(Employee::getAge).thenComparing(Employee::getName));
+✅ Practice: Lambdas, functional interfaces
+
+3. 🌐 Anagram Grouping
+Given a list of strings, group anagrams together. Input: ["cat", "tac", "bat", "tab", "act"] → Output: [[cat, tac, act], [bat, tab]]
+
+✅ Practice: Map<String, List<String>>, sorting, hashing
+
+4. ⛓️ Detect a Cycle in a Linked List
+Use Floyd’s Cycle Detection Algorithm.
+
+✅ Practice: Pointers, edge cases
+
+5. 🧠 Thread-safe Counter
+Implement a thread-safe Counter with methods: increment(), get().
+
+✅ Practice: AtomicInteger, synchronized, ReentrantLock
+
+⚙️ Concurrency / Multithreading
+6. 🚦 Print Even/Odd with Two Threads
+One thread prints even numbers, the other prints odd — in sequence.
+
+✅ Practice: wait() / notify(), thread coordination
+
+7. 🔄 Producer-Consumer
+Use BlockingQueue to implement producer-consumer pattern with threads.
+
+✅ Practice: Concurrency utilities, race conditions
+
+8. 🧵 Deadlock Detection or Resolution
+Write code that triggers deadlock with 2 threads & then resolve it.
+
+⚡ Spark / Streaming Coding
+9. 🔥 Sliding Window Aggregation
+Given a stream of transactions, find total spend per user over a sliding 10-minute window.
+
+✅ Practice: withWatermark, window, groupByKey, custom state
+
+10. 🛰️ Stateful Login Pattern Detection
+Detect if a user logs in from multiple IPs in 1 minute using flatMapGroupsWithState.
+
+11. 🧹 Custom Partitioning in RDD
+Implement your own Partitioner to route data by even/odd key.
+
+✅ Practice: Spark RDD API, reduceByKey, partitionBy
+
+🧠 Bonus — Puzzles & Logic
+12. 💡 Missing Number
+Find the missing number in a range 1...n from an array of size n−1.
+
+13. 💡 Palindrome Permutation
+Check if any permutation of a string is a palindrome (e.g., "tactcoa" → "taco cat")
+
+🎯 Want These as Exercises?
+I can generate:
+
+📘 A PDF or Markdown problem sheet
+
+🧪 Java class stubs with method signatures
+
+💡 Solutions with explanations (only after you try them!)

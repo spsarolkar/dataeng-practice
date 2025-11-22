@@ -1,0 +1,11 @@
+common interview favorite, and knowing how to differentiate RDD, DataFrame, and Dataset clearly (especially from a Java developer's perspective) can really impress.
+
+🔍 Difference Between RDD, DataFrame, and Dataset in Spark
+Feature	RDD (Resilient Distributed Dataset)	DataFrame	Dataset
+Type Safety	✅ Yes (Compile-time type checks)	❌ No (Untyped, like a SQL table)	✅ Yes (only in Scala/Java)
+API Level	Low-level Functional (Java/Scala)	High-level Relational API	Mid-level (Mix of both)
+Performance	❌ Slower (No optimization)	✅ Faster (Catalyst + Tungsten)	✅ Faster (Catalyst + Tungsten)
+Ease of Use	❌ Verbose in Java	✅ Easy SQL-like syntax	Moderate (needs Encoders)
+Serialization	Java Serialization (Slower)	Tungsten binary format	Encoders for optimized serialization
+Use Case	Complex transformations, custom logic	Structured data, SQL queries	Structured data with type safety
+

@@ -1,0 +1,161 @@
+
+🚀 Advanced Java Questions (JDK 8 → JDK 17 Focus)
+🔹 Core Language Features
+What are the key differences between var in Java 10 and traditional type declarations?
+
+Follow-up: Can var be used in lambda expressions or method parameters?
+
+What is the purpose of sealed classes in Java 17?
+
+How do they differ from abstract classes or interfaces?
+
+How does switch expression (Java 14+) improve upon classic switch?
+
+Can you show a use case involving pattern matching?
+
+Explain the concept of Records in Java 16.
+
+How do they compare with Lombok @Data classes?
+
+What is the Text Blocks feature in Java 15?
+
+When would you use them over regular strings?
+
+🔹 JVM and Performance
+What is the Z Garbage Collector introduced in Java 11+?
+
+When would you use ZGC vs G1GC?
+
+How do JEPs help track changes in Java versions?
+
+Can you name 2 important JEPs from Java 14 to 17?
+
+What is CDS (Class Data Sharing) and how does it improve startup performance?
+
+🔹 Collections and APIs
+What are the key additions to the Collectors API since Java 8?
+
+How would you use Collectors.teeing() introduced in Java 12?
+
+What changes were made to Optional since Java 8?
+
+How does Optional.or() (Java 9) simplify default value logic?
+
+🔹 Concurrency & Flow Control
+What is the Flow API introduced in Java 9?
+
+How is it related to the Reactive Streams specification?
+
+How does CompletableFuture.delayedExecutor() (Java 9) differ from ScheduledExecutorService?
+
+What enhancements were made to ThreadLocalRandom in recent Java versions?
+
+🔹 Tooling & JVM Internals
+What’s new in the jlink and jmod tools introduced with Java 9?
+
+How would you use them to ship a minimal runtime?
+
+How does the new --enable-preview flag work in Java?
+
+What are the risks of using preview features in production?
+
+🔹 Project-Oriented and Modern Practices
+How does Java’s module system (JPMS) help in securing large codebases?
+
+Compare it with OSGi if relevant.
+
+What are the limitations or challenges you might face when migrating a Java 8 project to Java 17?
+
+✅ Bonus Spark-Relevant Integration Questions
+How does Spark's support for JDK 17 differ from earlier versions?
+
+Any compatibility issues you've encountered?
+
+Can you use Records as typed Dataset beans in Spark Structured Streaming?
+
+Would using Text Blocks help in writing multiline SQL queries inside Spark apps?
+
+
+
+
+---------------------------------------------------------------------------------------------------
+
+
+
+
+
+✅ Java 9
+1. 🔐 Factory Methods for Collections
+New static methods on interfaces like List, Set, and Map for immutable collections.
+
+java
+Copy
+Edit
+List<String> list = List.of("A", "B", "C");
+Set<Integer> set = Set.of(1, 2, 3);
+Map<String, Integer> map = Map.of("A", 1, "B", 2);
+Immutable by default
+
+Throws UnsupportedOperationException on mutation attempts
+
+2. 🔄 Map.ofEntries(...)
+For maps with more than 10 key-value pairs:
+
+java
+Copy
+Edit
+Map<String, String> map = Map.ofEntries(
+    Map.entry("key1", "val1"),
+    Map.entry("key2", "val2")
+);
+✅ Java 10
+3. 💡 copyOf() Methods
+Creates unmodifiable copies from existing collections.
+
+java
+Copy
+Edit
+List<String> copy = List.copyOf(existingList);
+If the original list is already unmodifiable, no copy is made.
+
+Great for defensive copying in APIs.
+
+✅ Java 11
+4. 🚀 Performance Improvements
+Internally optimized collection factories (e.g., List.of) for better memory usage and iteration speed.
+
+✅ Java 12
+5. 🧪 Collectors.teeing() — Advanced Stream Aggregation
+Combines two downstream collectors and merges the results.
+
+java
+Copy
+Edit
+var result = Stream.of(1, 2, 3, 4, 5)
+    .collect(Collectors.teeing(
+        Collectors.summingInt(i -> i),
+        Collectors.counting(),
+        (sum, count) -> sum / count
+    ));
+➡ Calculates average manually
+🧠 Powerful when .averagingInt() doesn’t fit complex logic.
+
+✅ Java 14–17
+6. 📈 Internal Optimizations
+JDK team has continued improving spliterator, parallel stream, and ConcurrentHashMap internals for performance and lower GC pressure.
+
+7. 📁 toList() on Stream (Java 16+)
+Simpler and more readable:
+
+java
+Copy
+Edit
+List<String> list = stream.toList(); // Instead of collect(Collectors.toList())
+🧠 Interview-Ready Summary
+
+Version	Feature
+Java 9	List.of(), Set.of(), Map.of(), Map.ofEntries()
+Java 10	copyOf() methods
+Java 12	Collectors.teeing()
+Java 16	Stream.toList()
+Java 9–17	Many internal enhancements for performance and memory efficiency
