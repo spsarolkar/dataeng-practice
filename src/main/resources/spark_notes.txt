@@ -1,0 +1,50 @@
+
+
+Performance optimisation 
+---------------
+1. How to choose repartition(n) and spark.sql.shuffle.partitions
+    Target bytes per partition ~ 100 - 250MB
+
+    Avg record size 100B -> 500M records --> 50GB + compression overhead(1.5x) --> 75GB
+
+    Choose partitions = total_bytes/target_partition_size = 75G/0.150G = 500 -- for target 150M
+
+    Calculative number of processors (Using number of partitions above choose cluster executors on cloud environment)
+
+    # of partitions = # of executors * cores_per_executors * 2 tasks per executors
+
+2. Prefer reduceByKey, aggregateByKey, combineByKey over groupByKey
+
+    The performance gain is because of map side combine
+
+    reduceByKey(func) --> Simplest keep key and value data types same we. just need to provide function that combines two values
+
+    aggregateByKey(zeroValue)(seqOp:V,C->C, combOp: C,C->C) --> moderate comples where we need to provide initial value like 0 in case of int and "" in case of String accumulation
+
+    combineByKey(createCombiner:()->C, mergeValue:(V,C)->C, mergeCombiner:(C,C)->C) --> createCombiner acts as initialiser , mergeValue --> merges value with Combiner, mergeCombiner-> merges two combiners
+
+3. Persist strategy: MEMORY_AND_DISK_SER
+    
+    
+    Use MEMORY_AND_DISK_SER to persist large intermediate datasets (serialized + spill to disk).
+    
+    
+    from pyspark import StorageLevel
+    df.persist(StorageLevel.MEMORY_AND_DISK_SER)
+    # ... do transformations that reuse df ...
+    df.unpersist()
+
+
+    * MEMORY_AND_DISK keeps objects deserialized (higher JVM heap cost).
+
+    * MEMORY_AND_DISK_SER stores serialized bytes (lower JVM object overhead) and spills to disk when memory is low — much safer for large datasets.
+
+4. Serialization & executor memory settings
+    --conf spark.executor.memoryOverhead=6g
+
+    memoryOverhead covers off-heap (shuffle buffers, native libs). If you see OOM in executor logs for native memory, increase memoryOverhead.
+
+    --conf spark.memory.fraction=0.7 \
+    --conf spark.memory.storageFraction=0.3
+
+    Consider spark.memory.fraction (default 0.6) and spark.memory.storageFraction (default 0.5). If your jobs store more cache, increase storage fraction or reduce execution fraction accordingly:
