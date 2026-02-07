@@ -1,6 +1,6 @@
 🧪 Core Java / Collections
 1. 🔁 LRU Cache (Least Recently Used)
-Design a cache using LinkedHashMap or Deque + HashMap.
+Design a cache using c or Deque + HashMap.
 
 ✅ Practice: Map, Queue, Eviction policy, Concurrency control (optional)
 

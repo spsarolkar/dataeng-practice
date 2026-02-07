@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barclays Senior Software Engineer Interview Prep</title>
+    <style>
+        :root {
+            --primary-color: #00AEEF;
+            /* Barclays Blue-ish */
+            --secondary-color: #00395D;
+            /* Dark Blue */
+            --text-color: #333;
+            --bg-color: #f4f7f6;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--secondary-color);
+        }
+
+        h1 {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            border-left: 5px solid var(--primary-color);
+            padding-left: 10px;
+            margin-top: 40px;
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #d63384;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .concept-title {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .ref-link {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Barclays Senior Software Engineer Interview Prep</h1>
+        <p><strong>Role Overview:</strong> Senior role focusing on Digital Landscape, Innovation, High Performance, and
+            Scalability.</p>
+
+        <!-- SECTION 1: DATA STRUCTURES -->
+        <div class="card">
+            <h2>1. Data Structures (Java & Python)</h2>
+            <p>A refresher on core structures using examples from your project <code>dataeng-practice</code>.</p>
+
+            <h3>Java Collections</h3>
+            <ul>
+                <li>
+                    <span class="concept-title">List (ArrayList vs LinkedList)</span>:
+                    Ordered collection. <code>ArrayList</code> is fast for access (O(1)), slow for inserts/removes in
+                    middle. <code>LinkedList</code> is opposite.
+                    <br><em>Project Example:</em> In <code>IotSensorSpikeDetector.java</code>, you use
+                    <code>List&lt;String&gt; alerts = new ArrayList&lt;&gt;()</code> to store multiple alert messages
+                    generated in a single stream batch.
+                </li>
+                <li>
+                    <span class="concept-title">Map (HashMap vs LinkedHashMap vs TreeMap)</span>:
+                    Key-Value pairs.
+                    <ul>
+                        <li><code>HashMap</code>: O(1) access. Unordered.</li>
+                        <li><code>LinkedHashMap</code>: Preserves insertion order. Used in your
+                            <code>LRUCache.java</code> example!</li>
+                        <li><code>TreeMap</code>: Sorted by keys (O(log n)).</li>
+                    </ul>
+                    <br><em>Project Example:</em> In <code>LRUCache.java</code>, you extend
+                    <code>LinkedHashMap&lt;Integer,Integer&gt;</code> and override <code>removeEldestEntry</code> to
+                    implement a cache eviction policy automatically.
+                </li>
+                <li>
+                    <span class="concept-title">Set (HashSet)</span>:
+                    Unique elements. O(1) access. Important for deduplication tasks.
+                </li>
+            </ul>
+
+            <h3>Python Data Structures</h3>
+            <p>You didn't have Python files in the specific repo, but here is the cheat sheet:</p>
+            <ul>
+                <li><code>list</code>: Dynamic array. <code>my_list = [1, 2, 3]</code>. Slicing <code>list[::]</code> is
+                    very powerful.</li>
+                <li><code>dict</code>: Hash table. <code>my_dict = {"key": "value"}</code>. Highly optimized in Python
+                    3.6+ (ordered by insertion).</li>
+                <li><code>set</code>: Unique keys. <code>my_set = {1, 2, 3}</code>. Great for
+                    <code>set(list_a) & set(list_b)</code> (intersection).</li>
+                <li><code>tuple</code>: Immutable list. <code>my_tuple = (1, 2)</code>. Used as keys in dicts.</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 2: JAVA CORE & CONCURRENCY -->
+        <div class="card">
+            <h2>2. Java Core (8+) & Concurrency</h2>
+
+            <h3>Functional Programming (Streams)</h3>
+            <p>Barclays requires Java 8+. Key concepts: `map`, `filter`, `reduce`, `collect`.</p>
+            <p><em>Project Example:</em> Your file <code>TopRefererInAccessLog.java</code> effectively uses MapReduce
+                concepts (logic similar to Streams but with RDDs):
+            <pre>
+// Equivalent Stream logic for counting referrers
+Map&lt;String, Long&gt; counts = accessLogs.stream()
+    .collect(Collectors.groupingBy(Log::getReferrer, Collectors.counting()));</pre>
+            </p>
+            <p><em>Advanced Example:</em> Your <code>TeeingExample.java</code> shows Java 12
+                <code>Collectors.teeing</code>, which merges two collectors (e.g., getting min and max in one pass).
+                This is a great talking point for "keeping up with modern Java".</p>
+
+            <h3>Concurrency & Multithreading</h3>
+            <ul>
+                <li><strong>Threads vs Executers:</strong> Don't use raw <code>Thread</code>. Use
+                    <code>ExecutorService</code>.</li>
+                <li><strong>CompletableFuture:</strong> For non-blocking async programming (similar to JavaScript
+                    Promises).</li>
+                <li><strong>Synchronization:</strong> <code>synchronized</code> keyword vs <code>ReentrantLock</code> vs
+                    <code>AtomicInteger</code>.</li>
+                <li><strong>Spark Parallelism:</strong> In your project, Spark handles concurrency distributedly.
+                    <code>mapToPair</code> and <code>reduceByKey</code> run in parallel across nodes/cores. Mentioning
+                    this shows you understand "Distributed Concurrency".</li>
+            </ul>
+
+            <h3>JVM Internals</h3>
+            <ul>
+                <li><strong>Memory Model:</strong> Heap (Objects) vs Stack (Primitives/References).</li>
+                <li><strong>GC (Garbage Collection):</strong> G1GC (default now), Parallel GC. Explain "Stop-The-World"
+                    events and how to tune them (briefly).</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 3: PYTHON & FAST API -->
+        <div class="card">
+            <h2>3. Python & FastAPI</h2>
+            <p>Since the role asks for FastAPI:</p>
+            <ul>
+                <li><strong>FastAPI benefits:</strong> Built on <code>Starlette</code> (high performance async) and
+                    <code>Pydantic</code> (data validation). Auto-generates Swagger UI (<code>/docs</code>).</li>
+                <li><strong>Type Hinting:</strong> Critical in modern Python.
+                    <code>def get_user(id: int) -> User:</code>.</li>
+                <li><strong>Async/Await:</strong>
+                    <pre>
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    results = await some_async_db_call()
+    return {"item_id": item_id, "data": results}
+</pre>
+                </li>
+                <li><strong>WSGI vs ASGI:</strong> Review that Flask is WSGI (synchronous) and FastAPI is ASGI
+                    (asynchronous).</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 4: SYSTEM DESIGN & MICROSERVICES -->
+        <div class="card">
+            <h2>4. System Design & Microservices</h2>
+            <p><em>Requirement: "High performance, resilient, scalable"</em></p>
+
+            <h3>Microservices Patterns</h3>
+            <ul>
+                <li><strong>Circuit Breaker:</strong> (Resilience) Stop calling a failing service to prevent cascading
+                    failure (e.g., Resilience4j).</li>
+                <li><strong>CQRS:</strong> Command Query Responsibility Segregation (Seperate reads from writes for
+                    performance).</li>
+                <li><strong>SAGA Pattern:</strong> For distributed transactions across microservices.</li>
+            </ul>
+
+            <h3>Real-world Project Example: <code>IotSensorSpikeDetector.java</code></h3>
+            <p>You can use this file to demonstrate System Design knowledge:</p>
+            <ul>
+                <li><strong>Scalability:</strong> Using Spark Structured Streaming handles massive throughput.</li>
+                <li><strong>State Management:</strong> You used <code>GroupState</code> (Stateful processing). This is
+                    how you handle complex logic (e.g., "increase > 10 degrees in 5 mins") in a stateless distributed
+                    system.
+                    <pre>
+// Your code
+state.update(sensorTemperature); // Persisting state across batches
+</pre>
+                </li>
+                <li><strong>Fault Tolerance:</strong> Spark uses Checkpointing (Write Ahead Logs) to recover state after
+                    a crash.</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 5: BEHAVIORAL & BARCLAYS VALUES -->
+        <div class="card">
+            <h2>5. Behavioral & Barclays Values</h2>
+            <p><strong>RISES Values:</strong></p>
+            <ul>
+                <li><strong>Respect:</strong> Valuing diversity and inclusive environment.</li>
+                <li><strong>Integrity:</strong> Acting ethically and honestly (Critical in Banking).</li>
+                <li><strong>Service:</strong> Customer-focused (Digital offerings).</li>
+                <li><strong>Excellence:</strong> "Unparalleled customer experiences" (from job desc).</li>
+                <li><strong>Stewardship:</strong> Leaving things better than you found them.</li>
+            </ul>
+            <p><strong>Senior Expectations:</strong> Mentoring, Code Reviews, Design Principles (SOLID), Driving
+                Innovation.</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

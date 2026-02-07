@@ -622,7 +622,7 @@ What is the Z Garbage Collector introduced in Java 11+?
     | Java 7       | G1GC introduced          | Predictable pauses                  |
     | Java 8       | G1GC stable              | Alternative to CMS                  |
     | Java 9       | G1GC default             | CMS deprecated                      |
-    | Java 11      | ZGC + Epsilon            | Ultra-low latency, testing          |
+    | Java 11      | ZGC + Epsilon            | Ultra-low latency, testing, ZGC multi terabyte support          |
     | Java 12      | Shenandoah               | Low-latency open-source GC          |
     | Java 15      | ZGC production           | Mature sub-ms GC                    |
     | Java 17      | All collectors optimized | G1 default, ZGC & Shenandoah stable |

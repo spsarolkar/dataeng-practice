@@ -2,44 +2,779 @@
 🚀 Advanced Java Questions (JDK 8 → JDK 17 Focus)
 🔹 Core Language Features
 What are the key differences between var in Java 10 and traditional type declarations?
-
 Follow-up: Can var be used in lambda expressions or method parameters?
+   ---
+
+    # ✅ **Key Differences Between `var` (Java 10) and Traditional Type Declarations**
+
+    ## 🔹 1. **Type is Inferred, Not Dynamic**
+
+    Traditional declaration:
+
+    ```java
+    String message = "Hello";
+    ```
+
+    Using `var`:
+
+    ```java
+    var message = "Hello"; // compiler infers String
+    ```
+
+    **But:** Java remains statically typed.
+    `var` does **not** make Java dynamically typed like JavaScript or Python.
+
+    ---
+
+    ## 🔹 2. **`var` Can Only Be Used in Local Contexts**
+
+    You **can use `var` only for:**
+
+    * Local variables
+    * Loop variables
+    * Try-with-resources variables
+
+    ❌ You **cannot use `var` for:**
+
+    * Method parameters
+    * Method return types
+    * Fields (members)
+    * Constructor parameters
+    * Lambda parameters
+
+    Example (invalid):
+
+    ```java
+    public void process(var input) {} // ❌ Not allowed
+    ```
+
+    ---
+
+    ## 🔹 3. **Improves Readability When Type Is Obvious**
+
+    Example where `var` improves clarity:
+
+    ```java
+    var map = new HashMap<String, List<Integer>>();
+    ```
+
+    Without `var`:
+
+    ```java
+    HashMap<String, List<Integer>> map = new HashMap<>();
+    ```
+
+    ---
+
+    ## 🔹 4. **But Can Hurt Readability If Misused**
+
+    Bad:
+
+    ```java
+    var data = process(); // What type is data??
+    ```
+
+    Good:
+
+    ```java
+    var userList = getActiveUsers(); // name suggests meaning
+    ```
+
+    Always use meaningful variable names.
+
+    ---
+
+    ## 🔹 5. **Cannot Be Assigned a Null Literal**
+
+    This is invalid:
+
+    ```java
+    var x = null; // ❌ compiler cannot infer type
+    ```
+
+    ---
+
+    ## 🔹 6. **Type is Locked at Compile Time**
+
+    Even if you later assign a different type — compiler won’t allow it.
+
+    ```java
+    var num = 10;  // inferred as int
+    num = "hello"; // ❌ type mismatch
+    ```
+
+    ---
+
+    ## 🔹 7. **Works Great with Anonymous Types**
+
+    Example:
+
+    ```java
+    var obj = new Object() {
+        int id = 10;
+    };
+    ```
+
+    Without `var`, this is impossible to type.
+
+    ---
+
+    # 📝 **Summary Table**
+
+    | Feature                                | `var`   | Traditional Types |
+    | -------------------------------------- | ------- | ----------------- |
+    | Type inferred automatically            | ✔️      | ❌ (explicit)      |
+    | Compile-time static typing             | ✔️      | ✔️                |
+    | Can be used for fields                 | ❌       | ✔️                |
+    | Can be used for method parameters      | ❌       | ✔️                |
+    | Useful with generics/anonymous classes | ✔️      | Limited           |
+    | Improves readability                   | Depends | Usually yes       |
+
+    ---
+
+
+
+# Can `var` be used in lambda parameters?**
+
+    ### ✔️ **YES — Java allows using `var` in lambda parameters (Java 11+)**
+
+    Example:
+
+    ```java
+    (var x, var y) -> x + y
+    ```
+
+    This works and is legal.
+
+    ---
+
+    ## 🔹 **Why was this added?**
+
+    Java 11 introduced this to allow:
+
+    ### 1️⃣ **Adding annotations on lambda parameters**
+
+    Example:
+
+    ```java
+    (@NotNull var name) -> System.out.println(name);
+    ```
+
+    Before Java 11, this was impossible because annotations require explicit types.
+
+    ---
+
+    ### ❌ Cannot use `var` for single-parameter lambdas without parentheses
+
+    ```java
+    var x -> x * 2;  // ❌ invalid
+    ```
+
+    Correct version:
+
+    ```java
+    (var x) -> x * 2;
+    ```
+
+    ---
+
+    ### ❌ `var` does NOT change type inference of the lambda
+
+    This is still determined by the target functional interface.
+
+    ---
+
+    # 📝 **Examples**
+
+    ### ✔ Valid usage
+
+    ```java
+    (var a, var b) -> a + b
+    ```
+
+    ```java
+    (@NotNull var input) -> System.out.println(input)
+    ```
+
+    ---
+
+    ### ❌ Invalid usage
+
+    ```java
+    (a, var b) -> a + b  // ❌ mixed
+    ```
+
+    ```java
+    var a -> a * 2       // ❌ missing parentheses
+    ```
+
+    ---
+
+
+
+
+
 
 What is the purpose of sealed classes in Java 17?
 
-How do they differ from abstract classes or interfaces?
+    A sealed class explicitly lists its permitted subclasses:
+
+    ```java
+    public sealed class Shape permits Circle, Rectangle {}
+    ```
+
+    Only these two classes can extend `Shape`.
+
+
+    With sealed classes, the compiler can verify that all subtypes are handled in a switch:
+
+    ```java
+    switch (shape) {
+        case Circle c -> ...
+        case Rectangle r -> ...
+        // no default needed — compiler knows hierarchy is complete
+    }
+    ```
+
+    This is impossible with normal classes.
+
+    ---
+
+    ### 🔹 4. **Increase security**
+
+    They prevent extension by untrusted code and reduce risk of:
+
+    * Unexpected overriding
+    * Untracked specialization
+    * Accidental misuse by developers
+
+    ---
+
+    ### 🔹 5. **Better alternative to “final” or “abstract” classes**
+
+    | Modifier     | Meaning                               |
+    | ------------ | ------------------------------------- |
+    | **final**    | No one can extend it                  |
+    | **abstract** | Anyone can extend it                  |
+    | **sealed**   | *Only specific* classes can extend it |
+
+    Sealed classes provide a **middle ground**.
+
+    ---
+
+    # 🔥 Example
+
+    ```java
+    public sealed class Vehicle permits Car, Bike {}
+
+    public final class Car extends Vehicle {}
+    public final class Bike extends Vehicle {}
+    ```
+
+    Only `Car` and `Bike` can extend `Vehicle`.
+
+    ---
+
 
 How does switch expression (Java 14+) improve upon classic switch?
-
 Can you show a use case involving pattern matching?
+
+    Here is a **concise, interview-quality explanation** of how **switch expressions (Java 14+)** improve upon classic switch statements.
+
+    ---
+
+    # ✅ **How Switch Expressions Improve Upon Classic Switch**
+
+    Java 14+ introduces **switch expressions**, which are more powerful, safer, and more concise than traditional switch statements.
+
+    ---
+
+    # 🔹 1. **They return values**
+
+    Classic switch = only a *statement*, cannot return a result.
+
+    ```java
+    int result = switch (day) {
+        case MONDAY -> 1;
+        case TUESDAY -> 2;
+        default -> 0;
+    };
+    ```
+
+    This was **impossible** in classic switch.
+
+    ---
+
+    # 🔹 2. **No fall-through by default**
+
+    Classic switch falls through unless you add `break`:
+
+    ```java
+    switch(x) {
+        case 1:
+            // falls through accidentally
+        case 2:
+            ...
+    }
+    ```
+
+    Switch expressions **do not fall through**, eliminating an entire class of bugs.
+
+    ```java
+    switch(x) {
+        case 1 -> "one";
+        case 2 -> "two";
+    }
+    ```
+
+    ---
+
+    # 🔹 3. **Better, clearer syntax — “arrow” (`->`) style**
+
+    New switch:
+
+    ```java
+    case MONDAY -> "Start";
+    ```
+
+    Old switch:
+
+    ```java
+    case MONDAY:
+        return "Start";
+    ```
+
+    Cleaner + more readable.
+
+    ---
+
+    # 🔹 4. **Pattern Matching Support (modern Java)**
+
+    Switch expressions integrate with pattern matching, enabling type-based dispatch.
+
+    Example:
+
+    ```java
+    switch (obj) {
+        case String s -> s.toUpperCase();
+        case Integer i -> i * 2;
+        default -> 0;
+    }
+    ```
+
+    Classic switch cannot operate on anything except:
+
+    * primitives
+    * enum
+    * String
+
+    Switch expressions can handle **types**, not just values.
+
+    ---
+
+    # 🔹 5. **Exhaustiveness Checking**
+
+    Compiler ensures all possible cases are handled if switching on a **sealed type** or an **enum**.
+
+    Example with sealed class:
+
+    ```java
+    int area = switch(shape) {
+        case Circle c -> compute(c);
+        case Rectangle r -> compute(r);
+    }; // no default needed
+    ```
+
+    Classic switch does **not** enforce this.
+
+    ---
+
+    # 🔹 6. **`yield` keyword for complex cases**
+
+    For multi-line logic:
+
+    ```java
+    int num = switch(x) {
+        case 1 -> 10;
+        case 2 -> {
+            int val = compute();
+            yield val;  // returns a value from block
+        }
+        default -> 0;
+    };
+    ```
+
+
+    ---
+
+    # 🔥 Summary Table
+
+    | Feature                 | Classic Switch | Switch Expression |
+    | ----------------------- | -------------- | ----------------- |
+    | Returns a value         | ❌              | ✔                 |
+    | Prevents fall-through   | ❌              | ✔                 |
+    | Arrow syntax            | ❌              | ✔                 |
+    | Pattern matching        | ❌              | ✔                 |
+    | Exhaustiveness checking | ❌              | ✔                 |
+    | Multi-line with yield   | ❌              | ✔                 |
+    | Operates on more types  | Limited        | Expanded          |
+
+    ---
+
+
+
 
 Explain the concept of Records in Java 16.
 
 How do they compare with Lombok @Data classes?
 
 What is the Text Blocks feature in Java 15?
+    String query = """
+        SELECT id, name, age
+        FROM users
+        WHERE active = 1
+        ORDER BY age DESC
+        """;
+
 
 When would you use them over regular strings?
+
 
 🔹 JVM and Performance
 What is the Z Garbage Collector introduced in Java 11+?
 
-When would you use ZGC vs G1GC?
+    When would you use ZGC vs G1GC?
+
+    Here is a **chronological, interview-ready explanation** of how **Garbage Collection (GC) evolved from JVM 5 → Java 17**.
+    This is one of the **most common advanced Java interview questions**.
+
+    ---
+
+    # 🚀 **Evolution of Garbage Collectors in JVM (Java 5 → Java 17)**
+
+    Below is a clean timeline explaining **what GC existed, why new ones were added, and what problems they solved**.
+
+    ---
+
+    # 🟦 **Java 5 (2004): Parallel GC + CMS (early days)**
+
+    ### ✔ Parallel GC (Throughput Collector)
+
+    * Default GC for many years
+    * Multi-threaded **minor collections**
+    * Objective: **maximize throughput** (do more work per unit time)
+    * Still has significant **stop-the-world pauses**.
+
+    ### ✔ CMS (Concurrent Mark-Sweep) — introduced earlier, matured in Java 5
+
+    Purpose: **Low pause times**
+    CMS did:
+
+    * Concurrent marking
+    * Concurrent sweeping
+
+    But it **did not compact memory**, causing **fragmentation** and eventual *promotion failures*.
+
+    Many enterprises used **CMS** for low-latency applications.
+
+    ---
+
+    # 🟩 **Java 6 (2006): CMS improvements**
+
+    CMS got tuning parameters and became more stable, but flaws remained:
+
+    * Fragmentation
+    * Many tuning knobs
+    * Not ideal for very large heaps (>10–20 GB)
+
+    ---
+
+    # 🟧 **Java 7 (2011): G1GC (Garbage-First) introduced (experimental)**
+
+    G1GC was designed to **replace CMS**.
+
+    Key features:
+
+    * Region-based heap
+    * Predictable pause times
+    * Concurrent + incremental compaction
+    * Aims to meet a **soft pause-time target** (e.g., 200ms)
+
+    This is the start of **modern GC**.
+
+    ---
+
+    # 🟥 **Java 8 (2014): G1GC becomes feature complete**
+
+    Java 8 became the most popular Java version ever — GC stability mattered.
+
+    CMS still default, but:
+
+    * G1GC became production-ready
+    * Massive improvements in performance
+    * G1 compacted memory, eliminating CMS fragmentation problems
+
+    **Spark, Kafka, and many JVM frameworks were tuned around Java 8 GC behavior.**
+
+    ---
+
+    # 🟨 **Java 9 (2017): G1 becomes the default GC**
+
+    Why switch from Parallel GC → G1GC?
+
+    Because:
+
+    * CMS was deprecated
+    * Apps had larger heaps
+    * Predictable pause times were more important
+
+    New features:
+
+    * String deduplication
+    * Unified logging
+    * Improvements in GC ergonomics
+
+    This marks the shift to **pause time–first design**.
+
+    ---
+
+    # 🟦 **Java 11 (2018): Two Game Changers — ZGC and Epsilon**
+
+    ## ✔ **ZGC (Z Garbage Collector)** — Ultra-low latency
+
+    * < 1 ms pauses
+    * Concurrent compaction
+    * Supports **multi-terabyte heaps**
+    * Uses colored pointers
+
+    Built for **modern, high-memory, low-latency apps** (FinTech, ML, Big Data).
+
+    ## ✔ **Epsilon GC**
+
+    * **No-op GC**
+    * For testing or very short-lived apps
+    * Provides deterministic performance without overhead
+
+    ---
+
+    # 🟫 **Java 12 (2019): Shenandoah GC (RedHat)**
+
+    Another **low-pause collector**, like ZGC, but implemented differently.
+
+    Shenandoah:
+
+    * < 10ms pauses
+    * Fully concurrent compaction
+    * Good for large JVM heaps
+    * Originated from RedHat for Linux distros
+
+    Java now had **two serious low-latency collectors**: ZGC + Shenandoah.
+
+    ---
+
+    # 🟩 **Java 14–15: Modernization of GC**
+
+    ### ✔ ZGC becomes production-ready (Java 15)
+
+    ### ✔ Shenandoah also becomes production-ready
+
+    ### ✔ CMS is **removed** from JDK
+
+    GC landscape simplified into a modern set:
+
+    * Serial GC (small heaps)
+    * Parallel GC (throughput)
+    * G1GC (default for general use)
+    * ZGC (ultra-low latency)
+    * Shenandoah (low latency, open-source alternative)
+
+    ---
+
+    # 🟦 **Java 17 (2021 LTS): GC Maturity and Performance**
+
+    Java 17 stabilized all collectors:
+
+    ### ✔ ZGC improvements
+
+    * Sub-millisecond pauses
+    * Better memory usage
+    * Reduced pointer coloring overhead
+
+    ### ✔ G1 improvements
+
+    * Better region sizing
+    * Faster concurrent marking cycles
+
+    ### ✔ Shenandoah is fully integrated
+
+    * Predictable low-latency for large heaps
+
+    ### ✔ JDK 17 → modern GC defaults are far more stable than Java 8
+
+    ---
+
+    # 🎯 **Summary Table — Evolution of GC**
+
+    | Java Version | Collector                | Purpose                             |
+    | ------------ | ------------------------ | ----------------------------------- |
+    | Java 5       | Parallel GC, CMS         | Throughput / Low pause beginnings   |
+    | Java 6       | CMS improvements         | Reduced pauses, still fragmentation |
+    | Java 7       | G1GC introduced          | Predictable pauses                  |
+    | Java 8       | G1GC stable              | Alternative to CMS                  |
+    | Java 9       | G1GC default             | CMS deprecated                      |
+    | Java 11      | ZGC + Epsilon            | Ultra-low latency, testing          |
+    | Java 12      | Shenandoah               | Low-latency open-source GC          |
+    | Java 15      | ZGC production           | Mature sub-ms GC                    |
+    | Java 17      | All collectors optimized | G1 default, ZGC & Shenandoah stable |
+
+    ---
+
+    # 💥 **Interview-Ready Conclusion**
+
+    > “JVM GC evolved from throughput-oriented collectors like Parallel GC in Java 5, to low-pause CMS, to region-based G1 in Java 9, and eventually to ultra-low latency collectors like ZGC and Shenandoah in Java 11+. Modern Java (17+) provides GC choices for different use cases: G1 for general workloads, ZGC/Shenandoah for extremely low-latency systems, and Parallel GC for throughput-heavy applications.”
+
 
 How do JEPs help track changes in Java versions?
+    JEPs (JDK Enhancement Proposals) are the official documents used to propose, specify, and track all changes in the Java platform. They describe what a feature is, why it exists, how it works, and which Java version includes it. JEPs make it easy for developers to track new features, plan upgrades, understand JVM and language changes, and follow the evolution of Java in a structured and transparent manner.
+
 
 Can you name 2 important JEPs from Java 14 to 17?
 
-What is CDS (Class Data Sharing) and how does it improve startup performance?
+    What is CDS (Class Data Sharing) and how does it improve startup performance?
+
+    Here are **two important JEPs from Java 14 → 17**, with short, interview-ready explanations.
+
+    ---
+
+    # ✅ **1. JEP 395 – Records (Java 16)**
+
+    Records introduce **concise, immutable data carrier classes**.
+
+    Example:
+
+    ```java
+    public record Person(String name, int age) {}
+    ```
+
+    Why important?
+
+    * Eliminates boilerplate (constructor, getters, equals/hashCode, toString)
+    * Better modeling for DTOs, events, API responses
+    * Works perfectly with sealed classes + pattern matching
+
+    ---
+
+    # ✅ **2. JEP 409 – Sealed Classes (Java 17)**
+
+    Sealed classes allow **controlled inheritance**, specifying exactly which classes may extend a class or interface.
+
+    Example:
+
+    ```java
+    public sealed interface Shape permits Circle, Square {}
+    ```
+
+    ---
+
+    # ⭐ Bonus JEPs (Mention these if interviewer asks for more)**
+
+    ### ✔ JEP 361 – Switch Expressions (Java 14)
+
+    Enables switch to return values and eliminate fall-through.
+
+    ### ✔ JEP 378 – Text Blocks (Java 15)
+
+    Adds multiline strings using triple quotes (`"""`).
+
+    ### ✔ JEP 377 – ZGC Production (Java 15)
+
+    Ultra-low latency GC with <1ms pauses.
+
+    ### ✔ JEP 391 – macOS/AArch64 Port (Java 17)
+
+    Support for Apple Silicon (M1/M2).
+
+    ---
 
 🔹 Collections and APIs
 What are the key additions to the Collectors API since Java 8?
+    1. Collectors.filtering() (Java 9)
+        Before
+        Map<String, List<Employee>> result =
+            employees.stream()
+                .filter(e -> e.getAge() > 30)
+                .collect(groupingBy(Employee::getDept));
+        After
+        Map<String, List<Employee>> result =
+        employees.stream()
+            .collect(groupingBy(Employee::getDept,
+                filtering(e -> e.getAge() > 30, toList())));
+        * Essential for nested collectors, multi-level grouping, conditional grouping.
+
+    2. Collectors.flatMapping()
+        Map<String, List<String>> phones =
+        users.stream()
+            .collect(groupingBy(User::getCity,
+                flatMapping(u -> u.getPhones().stream(), toList())));
+
+    3. Collectors.collectingAndThen()
+        List<String> names = list.stream()
+        .collect(collectingAndThen(toList(), List::copyOf));
+
+    4. Collectors.teeing()
+        var result = numbers.stream()
+        .collect(teeing(
+            minBy(Integer::compareTo),
+            maxBy(Integer::compareTo),
+            (min, max) -> Map.of("min", min.get(), "max", max.get())
+        ));
+        Why important?
+        Avoids double streaming
+        Cleaner and more declarative aggregation logic
+        Very useful for analytics-style code
+    5. var result = numbers.stream()
+        .collect(teeing(
+            minBy(Integer::compareTo),
+            maxBy(Integer::compareTo),
+            (min, max) -> Map.of("min", min.get(), "max", max.get())
+        ));
+    6. List<String> list = stream.collect(toUnmodifiableList());
+
+
+
+
 
 How would you use Collectors.teeing() introduced in Java 12?
 
 What changes were made to Optional since Java 8?
 
+    1. ifPresentOrElse()- Allows handling both present and empty cases without an explicit else.
+        opt.ifPresentOrElse(
+            value -> System.out.println("Value: " + value),
+            () -> System.out.println("Empty")
+        );
+
+    2. or() - It allows lazy fallback, unlike orElse() which eagerly evaluates arguments.
+
+        Optional<String> result =
+        opt.or(() -> Optional.of("default"));
+    3. stream() - Turns an Optional into a Stream of 0 or 1 elements. Useful for functional pipelines, flatMap chains.
+        Stream<String> stream = opt.stream();
+
 How does Optional.or() (Java 9) simplify default value logic?
+    orElse() vs orElseGet() vs or()
+        orElse()
+            Optional<String> opt = Optional.empty();
+            String result = opt.orElse(getDefault()); <-Important: getDefault() is always executed, even if the Optional is not empty.->
+
+        orElseGet() – Lazy fallback (Supplier)
+            String result = opt.orElseGet(() -> getDefault());
+
+        or() – Lazy fallback, but returns another Optional (Java 9)
+            Optional<String> result =
+                opt.or(() -> Optional.of("fallback"));
+
+
 
 🔹 Concurrency & Flow Control
 What is the Flow API introduced in Java 9?

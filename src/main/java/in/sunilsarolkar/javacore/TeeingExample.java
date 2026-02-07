@@ -1,11 +1,7 @@
 package in.sunilsarolkar.javacore;
 
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.Collectors;s
 
 public class TeeingExample {
     public static void main(String[] args) {
@@ -21,7 +17,7 @@ public class TeeingExample {
         System.out.println(isEven);
 
 
-        Map<String,Object> minMax=list.stream().collect(Collectors.teeing(Collectors.maxBy(Comparator.naturalOrder()), Collectors.minBy(Comparator.naturalOrder()), (max,min)->Map.of("max",max,"min",min)));
+        Map<String,Optional<Integer>> minMax=list.stream().collect(Collectors.teeing(Collectors.maxBy(Comparator.naturalOrder()), Collectors.minBy(Comparator.naturalOrder()), (Optional<Integer> max, Optional<Integer> min) ->Map.of("max",max,"min",min)));
         System.out.println(minMax);
     }
 }
